@@ -15,12 +15,12 @@
 @section ('content')
     <div id="info">
         <p align="center">{{$msg}}</p>
-        {{--<form action="/test" method="post">--}}
-            {{--{{ csrf_field() }}--}}
-            {{--<div id="/logout">--}}
-                {{--<input type="submit" value="ログアウト">--}}
-            {{--</div>--}}
-        {{--</form>--}}
+        <form action="/logout" method="post">
+            {{ csrf_field() }}
+            <div id="logout">
+                <input type="submit" value="ログアウト">
+            </div>
+        </form>
     </div>
 @endsection
 

@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\User;
 use App\Log;
 use Illuminate\Support\Facades\DB;
+use App\Http\Requests\AuthRequest;
 
 class AuthAppController extends Controller{
 
@@ -21,13 +22,21 @@ class AuthAppController extends Controller{
     }
 
     /**
+     * ログイン画面へリダイレクトする。
+     *
+     * @return \Illuminate\Http\RedirectResponse|\Illuminate\Routing\Redirector
+     */
+    public function logout(){
+        return redirect('/login');
+    }
+
+    /**
      * メールアドレスとパスワードを使用した認証処理
      *
-     * @param Request $request
+     * @param AuthRequest $request
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
-     * @throws \Illuminate\Validation\ValidationException
      */
-    public function auth_check(Request $request){
+    public function auth_check(AuthRequest $request){
 
         // 該当レコードを検索
         $user = User::where('email', $request->email)->first();
@@ -41,56 +50,31 @@ class AuthAppController extends Controller{
 
             // パスワードも一致すれば、ログを無効化し、正常画面を表示する。
             if ($user->password == $request->password){
-                // ログの無効化
-                $param = [
-                    'email' => $user->email,
-                    'ip_address' => $request->ip(),
-                    'status' => '0',
-                    'updated_at' => date("Y/m/d H:i:s"),
-                ];
 
-                DB::table('logs')
-                    ->where('email', $user->email)
-                    ->update($param);
+                // 正常ログの登録
+                $user->logs()->save((New Log)->fill(['ip_address' => $request->ip(), 'status' => 0]));
+
+                // ログの無効化
+                $user->logs()->update(['updated_at' => date("Y/m/d H:i:s")]);
 
                 return view('index', ['msg' => "ようこそ、" . $user->name . "さん！！"]);
             }
 
-            // エラーログの登録
-            $param = [
-                'email' => $user->email,
-                'ip_address' => $request->ip(),
-                'status' => '1',
-                'created_at' => date("Y/m/d H:i:s"),
-            ];
 
-            DB::table('logs')
-                ->insert($param);
+            // エラーログの登録
+            $user->logs()->save((New Log)->fill(['ip_address' => $request->ip(), 'status' => 1]));
 
             // 処理日に出力されているエラーログの個数を取得
-            $log_count = Log::where('email', $user->email)
-                ->where('status', 1)
-                ->where('created_at', '>=', date("Y/m/d 00:00:00"))
-                ->count();
+            $log_count = $user->logs()->active()->count();
 
             // エラー件数が５件のときアカウントのロックとエラー画面を表示する
             if ($log_count == 5){
 
                 // アカウントのロック
-                $param = [
-                    'name' => $user->name,
-                    'email' => $user->email,
-                    'password' => $user->password,
+                $user->update([
                     'lock_status' => 1,
                     'locked_at' => date("Y/m/d H:i:s"),
-                    'unlocked_at' => $user->unlocked_at,
-                    'created_at' => $user->created_at,
-                    'updated_at' => date("Y/m/d H:i:s"),
-                ];
-
-                db::table('users')
-                    ->where('email', $user->email)
-                    ->update($param);
+                ]);
 
                 $msgs = [
                     "メールアドレス または パスワード を 5回 間違えたため",
@@ -106,15 +90,11 @@ class AuthAppController extends Controller{
         }
 
         // エラーログの登録
-        $param = [
-            'email' => $request->email,
-            'ip_address' => $request->ip(),
-            'status' => '1',
-            'created_at' => date("Y/m/d H:i:s"),
-        ];
-
-        DB::table('logs')
-            ->insert($param);
+        $log = new Log;
+        $log->email = $request->email;
+        $log->ip_address = $request->ip();
+        $log->status = 1;
+        $log->save();
 
         return view('login', ['msg' => "※メールアドレス 又は パスワード が違います。"]);
     }
