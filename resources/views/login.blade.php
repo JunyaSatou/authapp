@@ -1,40 +1,29 @@
 @extends ('layouts.base')
 
 <style>
-    #msg {
-        text-align:center;
+    .error {
         color: red;
     }
-    h1 {
-        margin-top:10px;
-        margin-bottom:.5rem
-    }
 </style>
+
 @section ('title', 'ログイン画面')
 
 @section ('content')
     <div id="login">
-        @if (count($errors) > 0)
-            @if ($errors->has('email') && $errors->has('password'))
-                <p id="msg">メールアドレスとパスワードを設定してください。<p>
-            @elseif ($errors->has('email'))
-                <p id="msg">メールアドレスを設定してください。<p>
-            @else
-                <p id="msg">パスワードを設定してください。<p>
-            @endif
-        @else
-            @if (isset($msg))
-                <p id="msg">{{$msg}}</p>
-            @endif
-        @endif
         <form action="/login" method="post">
             {{ csrf_field() }}
-            <table border="1" align="center">
+            <table align="center">
+                @if ($errors->has('email'))
+                    <tr class="error"><th align="right">※ERROR：</th><td>{{$errors->first('email')}}</td></tr>
+                @endif
                 <tr>
-                    <td>メール（必須）</td><td><input type="text" name="email" size="30" height="30" value="{{old('email')}}"></td>
+                    <td width="200" align="right">email（必須）：</td><td width="300"><input type="text" name="email" size="45" value="{{old('email')}}"></td>
                 </tr>
+                @if ($errors->has('password'))
+                    <tr class="error"><th align="right">※ERROR：</th><td>{{$errors->first('password')}}</td></tr>
+                @endif
                 <tr>
-                    <td>パスワード（必須）</td><td><input type="password" name="password" size="30" value="{{old('password')}}"></td>
+                    <td width="200" align="right">password（必須）：</td><td width="300"><input type="password" name="password" size="45" value="{{old('password')}}"></td>
                 </tr>
                 <tr align="center">
                     <td></td><td><input type="submit" value="send"></td>

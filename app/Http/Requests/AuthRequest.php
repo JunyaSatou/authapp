@@ -25,7 +25,16 @@ class AuthRequest extends FormRequest{
     public function rules(){
         return [
             'email' => 'required|email',
-            'password' => 'required',
+            'password' => 'required|min:4',
+        ];
+    }
+
+    public function messages(){
+        return [
+            'email.required' => 'emailの入力は必須です',
+            'email.email' => 'emailの形式が違います',
+            'password.required' => 'passwordの入力は必須です',
+            'password.min' => '4桁以上のパスワードを入力してください',
         ];
     }
 }
