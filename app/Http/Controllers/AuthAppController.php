@@ -76,7 +76,7 @@ class AuthAppController extends Controller{
                 ]);
 
                 $msgs = [
-                    "メールアドレス または パスワード を 5回 間違えたため",
+                    "email 又は password を 5回 間違えたため",
                     "アカウントがロックされました。"
                 ];
 
@@ -85,7 +85,7 @@ class AuthAppController extends Controller{
                 ]);
             }
 
-            return view('login', ['msg' => "※メールアドレス 又は パスワード が違います。"]);
+            return view('login', ['msg' => "※ email 又は password が違います。"]);
         }
 
         // エラーログの登録
@@ -96,6 +96,6 @@ class AuthAppController extends Controller{
         $log->save();
 
         // ログイン画面を表示
-        return view('login', ['msg' => "※メールアドレス 又は パスワード が違います。"]);
+        return view('login', ['msg' => "※ email 又は password が違います。"]);
     }
 }

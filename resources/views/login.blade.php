@@ -4,12 +4,17 @@
     .error {
         color: red;
     }
+    #msg {
+        text-align: center;
+        color: red;
+    }
 </style>
 
 @section ('title', 'ログイン画面')
 
 @section ('content')
     <div id="login">
+        <p id="msg">{{$msg}}</p>
         <form action="/login" method="post">
             {{ csrf_field() }}
             <table align="center">
