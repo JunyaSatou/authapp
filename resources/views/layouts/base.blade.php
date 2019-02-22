@@ -11,7 +11,7 @@
                 font-size:50pt;
                 text-align: center;
                 /*color: black;*/
-                margin:-20px 0px -30px 0px;
+                margin:20px 0px -30px 0px;
                 letter-spacing: -4pt;
             }
             ul {

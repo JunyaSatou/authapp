@@ -31,11 +31,10 @@
             {{ csrf_field() }}
             <table border="1" align="center">
                 <tr>
-                    <td>メール（必須）</td><td><input type="text" name="email" size="30" value="{{old('email')}}"></td>
+                    <td>メール（必須）</td><td><input type="text" name="email" size="30" height="30" value="{{old('email')}}"></td>
                 </tr>
                 <tr>
                     <td>パスワード（必須）</td><td><input type="password" name="password" size="30" value="{{old('password')}}"></td>
-                    {{--<td>パスワード（必須）</td><td><input type="password" name="password" size="30"></td>--}}
                 </tr>
                 <tr align="center">
                     <td></td><td><input type="submit" value="send"></td>
